@@ -1,0 +1,58 @@
+from IPython import get_ipython
+from IPython.display import display
+# %%
+# prompt: web scrapper to get information from website and print here
+!pip install python-docx
+import requests
+from bs4 import BeautifulSoup
+from docx import Document
+
+document=Document()
+
+
+# Replace with the URL you want to scrape
+url = "https://free-braindumps.com/amazon/free-aws-certified-cloud-practitioner-braindumps.html?p="  
+
+for page_number in range(1, 180):
+    # Send an HTTP GET request to the URL
+    response = requests.get(url + str(page_number))
+
+    try:
+        #response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for bad status codes
+
+        soup = BeautifulSoup(response.content, "html.parser")
+        elements = soup.find_all('div',class_="panel-body")
+
+        print(f"Found {len(elements)} elements on page {page_number}")
+
+        for element in elements:
+          questions=element.find('p',class_="lead")
+          answers=element.find_all('li',attrs={"data-correct":"True"})
+          if questions and answer:
+                # Add the question to the document
+              document.add_paragraph(questions.text.strip(), style='List Number')
+                
+                # Add the answer to the document
+              for answer in answers:  
+                 document.add_paragraph(answer.text.strip(), style='List Bullet')
+            
+            # Optional: Add a separator between questions
+          document.add_paragraph('')  
+
+    # Save the document
+       
+
+    # Example: Extract all the links on the page
+   
+
+
+
+
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred during the request: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+document.save('questions_and_answers.docx')
+print("Questions and answers from multiple pages saved to questions_and_answers.docx")  
